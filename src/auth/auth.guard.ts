@@ -15,7 +15,11 @@ export class AuthGuard implements CanActivate {
 
     async canActivate(context: ExecutionContextHost): Promise<boolean> {
         if (!this.isPublic(context)) {
-            this.addUserPayload(context);
+            const request = context.switchToHttp().getRequest();
+            const token = this.extractToken(request);
+            const payload = await this.verifyToken(token);
+            if (!token || !payload) throw new UnauthorizedException();
+            request['user'] = payload;
         }
         return true;
     }
@@ -31,26 +35,16 @@ export class AuthGuard implements CanActivate {
     }
 
     extractToken(request: Request): string {
-        const [type, token] = request.headers.authorization.split(' ') ?? [];
-        const currentToken = type === 'Bearer' ? token : undefined;
-        if (!currentToken) {
+        const { authorization } = request.headers;
+        if (!authorization) {
             throw new UnauthorizedException();
+        } else {
+            const [type, token] = authorization.split(' ') ?? [];
+            return type === 'Bearer' ? token : undefined;
         }
-        return currentToken;
     }
 
     async verifyToken(token: string): Promise<any> {
-        try {
-            return await this.jwtService.verifyAsync(token, { secret: this.configService.get('JWT_SECRET') });
-        } catch {
-            throw new UnauthorizedException();
-        }
-    }
-
-    async addUserPayload(context: ExecutionContextHost) {
-        const request = context.switchToHttp().getRequest();
-        const token = this.extractToken(request);
-        const payload = await this.verifyToken(token);
-        request['user'] = payload;
+        return await this.jwtService.verifyAsync(token, { secret: this.configService.get('JWT_SECRET') });
     }
 }

@@ -10,6 +10,10 @@ export class UserRepository extends Repository<User> {
         super(userRepository.target, userRepository.manager, userRepository.queryRunner);
     }
 
+    findById(id: number) {
+        return this.userRepository.findOneBy({ id });
+    }
+
     findByUsername(username: string): Promise<User> {
         return this.userRepository.findOneBy({ username });
     }

@@ -9,12 +9,16 @@ export class UsersService {
         private readonly userRepository: UserRepository,
     ) { }
 
+    create(createUserDto: CreateUserDto) {//}: Promise<User> {
+        const user = this.userRepository.create(createUserDto);
+        return this.userRepository.save(user);
+    }
+
     findByUsername(username: string): Promise<User> {
         return this.userRepository.findByUsername(username);
     }
 
-    create(createUserDto: CreateUserDto) {//}: Promise<User> {
-        const user = this.userRepository.create(createUserDto);
-        return this.userRepository.save(user);
+    findById(id: number): Promise<User> {
+        return this.userRepository.findById(id);
     }
 }

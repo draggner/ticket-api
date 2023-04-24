@@ -5,6 +5,8 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  app.enableCors({ origin: '*' })
+
   const swaggerConfig = new DocumentBuilder()
     .setTitle('Tickets API')
     .setVersion('1.0')

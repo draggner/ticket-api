@@ -1,11 +1,9 @@
 import { Body, ClassSerializerInterceptor, Controller, Get, Param, Post, Req, UseInterceptors } from "@nestjs/common";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { UsersService } from "src/users/users.service";
+import { CreateTicketMessageDto } from "./dto/create-ticket-message.dto";
 import { CreateTicketDto } from "./dto/create-ticket.dto";
 import { TicketsService } from "./tickets.service";
-import { CreateTicketMessageDto } from "./dto/create-ticket-message.dto";
-import { TicketStatus } from "./enums/ticket-status.enum";
-import { UpdateTicketDto } from "./dto/update-ticket.dto";
 
 @Controller('tickets')
 @ApiTags('Tickets')

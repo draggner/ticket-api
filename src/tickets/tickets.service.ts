@@ -1,10 +1,10 @@
 import { Injectable } from "@nestjs/common";
+import { CreateTicketMessageDto } from "./dto/create-ticket-message.dto";
 import { CreateTicketDto } from "./dto/create-ticket.dto";
+import { UpdateTicketDto } from "./dto/update-ticket.dto";
+import { TicketStatus } from "./enums/ticket-status.enum";
 import { TicketMessageRepository } from "./repositories/ticket-message.repository";
 import { TicketRepository } from "./repositories/ticket.repository";
-import { UpdateTicketDto } from "./dto/update-ticket.dto";
-import { CreateTicketMessageDto } from "./dto/create-ticket-message.dto";
-import { TicketStatus } from "./enums/ticket-status.enum";
 
 @Injectable()
 export class TicketsService {
@@ -14,13 +14,11 @@ export class TicketsService {
     ) { }
 
     async create(createTicketDto: CreateTicketDto) {
-        const ticket = await this.ticketRepository.save(createTicketDto);
-        const message = this.ticketMessageRepository.create({
-            message: createTicketDto.message,
-            user: createTicketDto.user,
-            ticket
-        });
-        return this.ticketMessageRepository.save(message);
+        const ticketDto = this.ticketRepository.create(createTicketDto);
+        const ticket = await this.ticketRepository.save(ticketDto);
+        const message = this.ticketMessageRepository.create({ message: createTicketDto.message, user: createTicketDto.user, ticket });
+        await this.ticketMessageRepository.save(message);
+        return ticket;
     }
 
     findAll() {
